@@ -47,33 +47,51 @@ class QuoteController extends Controller
     }
 
     public function store(StoreQuoteRequest $request)
-    {
-        $quote = Quote::create($request->validated());
-        
-        foreach ($request->items as $item) {
-            $quoteItem = $quote->items()->create([
-                'product_id' => $item['product_id'],
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-                'description' => $item['description'] ?? null
-            ]);
-            
-            if (isset($item['serial_numbers'])) {
-                $serials = explode(',', $item['serial_numbers']);
-                foreach ($serials as $serial) {
-                    $quoteItem->serialNumbers()->create([
-                        'product_id' => $item['product_id'],
-                        'serial_number' => trim($serial)
-                    ]);
-                }
+{
+    // Calculate the total for the quote
+    $total = 0;
+    foreach ($request->items as $item) {
+        $total += $item['price'] * $item['quantity'];
+    }
+
+    // Create the quote record with all necessary fields, including total
+    $quote = Quote::create([
+        'client_id' => $request->client_id,
+        'quote_number' => $request->quote_number,
+        'quote_date' => $request->quote_date,
+        'expiry_date' => $request->expiry_date,
+        'notes' => $request->notes,
+        'terms_and_conditions' => $request->terms_and_conditions,
+        'status' => $request->status,
+        'total' => $total, // Add total field here
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Add quote items and serial numbers if they exist
+    foreach ($request->items as $item) {
+        $quoteItem = $quote->items()->create([
+            'product_id' => $item['product_id'],
+            'quantity' => $item['quantity'],
+            'price' => $item['price'],
+            'description' => $item['description'] ?? null
+        ]);
+
+        if (isset($item['serial_numbers'])) {
+            $serials = explode(',', $item['serial_numbers']);
+            foreach ($serials as $serial) {
+                $quoteItem->serialNumbers()->create([
+                    'product_id' => $item['product_id'],
+                    'serial_number' => $serial
+                ]);
             }
         }
-        
-        $quote->calculateTotals();
-        
-        return redirect()->route('quotes.show', $quote)
-            ->with('success', 'Quote created successfully.');
     }
+
+    // Return the created quote with a response or redirect
+    return redirect()->route('quotes.index')->with('success', 'Quote created successfully!');
+}
+
 
     public function show(Quote $quote)
     {

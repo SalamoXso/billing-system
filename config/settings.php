@@ -1,13 +1,12 @@
-// config/settings.php
+<?php
+
 return [
-    'gst_rate' => 0.10, // 10% GST
-    
+    'gst_rate' => 0.10,
     'invoice' => [
         'prefix' => 'INV-',
         'next_number' => 1001,
         'default_template' => 'custom',
     ],
-    
     'email' => [
         'driver' => env('MAIL_DRIVER', 'smtp'),
         'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
