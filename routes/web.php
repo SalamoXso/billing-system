@@ -3,8 +3,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -77,19 +80,42 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    // Client Routes
+    Route::resource('clients', ClientController::class);
+    
+    // Quote Routes
+    Route::resource('quotes', QuoteController::class);
+    Route::get('quotes/{quote}/pdf', [QuoteController::class, 'pdf'])->name('quotes.pdf');
+    Route::post('quotes/{quote}/convert', [QuoteController::class, 'convertToInvoice'])->name('quotes.convert');
+    Route::post('quotes/{quote}/approve', [QuoteController::class, 'approve'])->name('quotes.approve');
+    Route::post('quotes/{quote}/reject', [QuoteController::class, 'reject'])->name('quotes.reject');
+    
     // Invoice Routes
     Route::resource('invoices', InvoiceController::class);
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
-    
-    // Client Routes
-    Route::resource('clients', ClientController::class);
+    Route::get('invoices/recurring', [InvoiceController::class, 'recurring'])->name('invoices.recurring');
+    Route::post('invoices/{invoice}/send', [InvoiceController::class, 'sendEmail'])->name('invoices.send');
     
     // Product Routes
     Route::resource('products', ProductController::class);
     
+    // Payment Routes
+    Route::resource('payments', PaymentController::class);
+    
+    // Report Routes
+    Route::get('reports/tax-summary', [ReportController::class, 'taxSummary'])->name('reports.tax-summary');
+    Route::get('reports/client-statement', [ReportController::class, 'clientStatement'])->name('reports.client-statement');
+    Route::get('reports/revenue-by-client', [ReportController::class, 'revenueByClient'])->name('reports.revenue-by-client');
+    Route::get('reports/item-sales', [ReportController::class, 'itemSales'])->name('reports.item-sales');
+    Route::get('reports/payments-collected', [ReportController::class, 'paymentsCollected'])->name('reports.payments-collected');
+    
     // Settings Routes
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::get('/settings/email', [SettingsController::class, 'email'])->name('settings.email');
+    Route::post('/settings/email', [SettingsController::class, 'updateEmail'])->name('settings.email.update');
+    Route::get('/settings/templates', [SettingsController::class, 'templates'])->name('settings.templates');
+    Route::post('/settings/templates', [SettingsController::class, 'updateTemplates'])->name('settings.templates.update');
 });
 
 require __DIR__.'/auth.php';

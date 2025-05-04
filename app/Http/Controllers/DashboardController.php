@@ -1,10 +1,12 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\Client;
 use App\Models\Product;
+use App\Models\Quote;
+use App\Models\Payment;
+use App\Models\ClientActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -24,10 +26,30 @@ class DashboardController extends Controller
         // Get total revenue
         $totalRevenue = Invoice::sum('total');
         
+        // Get invoice summaries
+        $draftInvoicesTotal = Invoice::where('status', 'draft')->sum('total');
+        $sentInvoicesTotal = Invoice::where('status', 'sent')->sum('total');
+        $overdueInvoicesTotal = Invoice::where('status', 'sent')
+            ->where('due_date', '<', Carbon::now())
+            ->sum('total');
+        $paymentsCollected = Payment::sum('amount');
+        
+        // Get quote summaries
+        $draftQuotesTotal = Quote::where('status', 'draft')->sum('total') ?? 0;
+        $sentQuotesTotal = Quote::where('status', 'sent')->sum('total') ?? 0;
+        $approvedQuotesTotal = Quote::where('status', 'approved')->sum('total') ?? 0;
+        $rejectedQuotesTotal = Quote::where('status', 'rejected')->sum('total') ?? 0;
+        
         // Get recent invoices
         $recentInvoices = Invoice::with('client')
             ->latest()
             ->take(5)
+            ->get();
+        
+        // Get recent activities
+        $recentActivities = ClientActivity::with(['client', 'subject'])
+            ->latest()
+            ->take(10)
             ->get();
         
         // Get monthly revenue for the current year
@@ -76,7 +98,16 @@ class DashboardController extends Controller
             'recentInvoices',
             'monthlyRevenue',
             'topClients',
-            'topProducts'
+            'topProducts',
+            'draftInvoicesTotal',
+            'sentInvoicesTotal',
+            'overdueInvoicesTotal',
+            'paymentsCollected',
+            'draftQuotesTotal',
+            'sentQuotesTotal',
+            'approvedQuotesTotal',
+            'rejectedQuotesTotal',
+            'recentActivities'
         ));
     }
 }
