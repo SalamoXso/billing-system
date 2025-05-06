@@ -120,4 +120,29 @@
     .badge-gray {
         @apply bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300;
     }
+
+    /* Sidebar specific styles */
+    .sidebar-wrapper {
+        @apply h-full;
+    }
+}
+
+/* Fix for the gap between sidebar and content */
+@media (min-width: 1024px) {
+    .sidebar-wrapper + div {
+        margin-left: 0 !important;
+    }
+}
+@layer components {
+    .sidebar-container {
+        @apply fixed lg:sticky inset-y-0 left-0 z-30 w-64 h-screen;
+    }
+
+    .main-content {
+        @apply flex-1 transition-all duration-300;
+    }
+
+    .main-content-with-sidebar {
+        @apply lg:pl-64;
+    }
 }

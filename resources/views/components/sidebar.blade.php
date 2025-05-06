@@ -1,8 +1,8 @@
-<div class="sidebar-wrapper" x-data="{ sidebarOpen: localStorage.getItem('sidebarOpen') === 'true' || window.innerWidth >= 1024 }">
-    <!-- Sidebar backdrop (mobile only) -->
+<div class="sidebar-wrapper">
+    <!-- Mobile backdrop (still mobile-only) -->
     <div 
-        x-show="sidebarOpen" 
-        @click="sidebarOpen = false; localStorage.setItem('sidebarOpen', 'false')" 
+        x-show="$store.sidebar.mobileOpen" 
+        @click="$store.sidebar.mobileOpen = false" 
         class="fixed inset-0 z-20 bg-black bg-opacity-50 transition-opacity lg:hidden"
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0"
@@ -14,8 +14,11 @@
 
     <!-- Sidebar -->
     <aside
-        class="fixed inset-y-0 left-0 z-30 w-64 transform bg-white dark:bg-gray-800 shadow-lg transition duration-300 lg:translate-x-0 lg:static lg:inset-0"
-        :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
+        class="fixed inset-y-0 left-0 z-30 w-64 bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 ease-in-out transform"
+        :class="{
+            'translate-x-0': $store.sidebar.mobileOpen || $store.sidebar.open,
+            '-translate-x-full': !$store.sidebar.mobileOpen && !$store.sidebar.open
+        }"
     >
         <!-- Sidebar header -->
         <div class="flex items-center justify-between px-4 py-4 border-b border-gray-200 dark:border-gray-700">
@@ -25,16 +28,17 @@
                 </svg>
                 <span class="text-lg font-semibold text-gray-800 dark:text-white">Billing System</span>
             </div>
-            <!-- Mobile close button -->
+            <!-- Close (X) button - visible on all screens -->
             <button 
-                @click="sidebarOpen = false; localStorage.setItem('sidebarOpen', 'false')" 
-                class="lg:hidden text-gray-500 hover:text-gray-700 focus:outline-none"
+                @click="window.innerWidth < 1024 ? $store.sidebar.mobileOpen = false : $store.sidebar.open = false" 
+                class="text-gray-500 hover:text-gray-700 focus:outline-none"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
+
 
         <!-- Sidebar content -->
         <div class="py-4 overflow-y-auto">

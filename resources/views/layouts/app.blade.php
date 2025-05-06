@@ -14,25 +14,24 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="font-sans antialiased bg-gray-50 dark:bg-gray-900">
-    <div class="min-h-screen flex" x-data="{ sidebarOpen: localStorage.getItem('sidebarOpen') === 'true' || window.innerWidth >= 1024 }">
-        <!-- Include the sidebar component -->
+    <div x-data class="min-h-screen flex">
         @include('components.sidebar')
         
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col min-h-screen transition-all duration-300" 
-             :class="{'lg:ml-64': sidebarOpen, 'lg:ml-0': !sidebarOpen}">
+        <div class="flex-1 flex flex-col overflow-hidden transition-all duration-300"
+             :class="{'lg:ml-64': $store.sidebar.open}">
             <!-- Top Navigation -->
             <header class="bg-white dark:bg-gray-800 shadow z-10">
                 <div class="px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                     <!-- Hamburger button -->
                     <button 
-                        @click="sidebarOpen = !sidebarOpen; localStorage.setItem('sidebarOpen', sidebarOpen)" 
-                        class="text-gray-500 hover:text-gray-700 focus:outline-none"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
+    @click="$store.sidebar.toggle()" 
+    class="text-gray-500 hover:text-gray-700 focus:outline-none"
+>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+</button>
                     
                     <!-- Page title -->
                     <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
@@ -71,7 +70,7 @@
             @endif
             
             <!-- Page Content -->
-            <main class="flex-1 px-4 sm:px-6 lg:px-8 py-6">
+            <main class="px-4 sm:px-6 lg:px-8 py-6">
                 @yield('content')
             </main>
             
@@ -85,5 +84,8 @@
             </footer>
         </div>
     </div>
+    
+    <!-- Alpine.js Store for Sidebar State -->
+
 </body>
 </html>
