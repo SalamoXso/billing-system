@@ -6,7 +6,7 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
                 <h1 class="text-2xl font-bold mb-4">Invoice #{{ $invoice->invoice_number }}</h1>
-                
+
                 <div class="mb-4">
                     <h2 class="text-lg font-semibold">Client Information</h2>
                     <p>{{ $invoice->client->name }}</p>
@@ -24,12 +24,19 @@
                     </thead>
                     <tbody>
                         @foreach($invoice->items as $item)
-                        <tr>
-                            <td class="px-4 py-2">{{ $item->product->name }}</td>
-                            <td class="px-4 py-2">{{ $item->quantity }}</td>
-                            <td class="px-4 py-2">${{ number_format($item->price, 2) }}</td>
-                            <td class="px-4 py-2">${{ number_format($item->price * $item->quantity, 2) }}</td>
-                        </tr>
+                            <tr>
+                                <td class="px-4 py-2">
+                                    {{ $item->product->name }}
+                                    @if($item->serialNumbers->count() > 0)
+                                        <div class="text-sm text-gray-500">
+                                            Serial Numbers: {{ $item->serialNumbers->pluck('serial_number')->implode(', ') }}
+                                        </div>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-2">{{ $item->quantity }}</td>
+                                <td class="px-4 py-2">${{ number_format($item->price, 2) }}</td>
+                                <td class="px-4 py-2">${{ number_format($item->price * $item->quantity, 2) }}</td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>

@@ -24,4 +24,8 @@ class SerialNumber extends Model
     {
         return $this->belongsTo(InvoiceItem::class);
     }
+    public function quoteItem()
+{
+    return $this->belongsTo(QuoteItem::class);
+}
 }
