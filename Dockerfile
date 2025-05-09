@@ -3,6 +3,7 @@ FROM php:8.3.2-fpm
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     nginx \
+    supervisor \
     curl \
     zip \
     git \
@@ -26,8 +27,9 @@ WORKDIR /var/www
 # Copy project files
 COPY . .
 
-# Copy nginx config
+# Copy config files
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./supervisord.conf /etc/supervisord.conf
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
@@ -38,5 +40,5 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 # Expose HTTP
 EXPOSE 80
 
-# Start services
-CMD service nginx start && php-fpm
+# Start both PHP-FPM and Nginx with supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
