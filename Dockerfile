@@ -39,6 +39,6 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Expose HTTP
 EXPOSE 80
-
+RUN cat /etc/nginx/conf.d/default.conf
 # Start both PHP-FPM and Nginx with supervisor
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
