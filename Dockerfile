@@ -28,7 +28,9 @@ WORKDIR /var/www
 COPY . .
 
 # Copy config files
+RUN rm -f /etc/nginx/conf.d/default.conf
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+
 COPY ./supervisord.conf /etc/supervisord.conf
 
 # Install PHP dependencies
