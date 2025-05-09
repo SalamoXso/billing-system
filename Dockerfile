@@ -28,10 +28,14 @@ WORKDIR /var/www
 COPY . .
 
 # Copy config files
-RUN rm -f /etc/nginx/conf.d/default.conf
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+# Remove ALL default nginx configs
+RUN rm -f /etc/nginx/sites-enabled/default \
+        /etc/nginx/conf.d/default.conf
 
+# Copy correct one
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 COPY ./supervisord.conf /etc/supervisord.conf
+
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
