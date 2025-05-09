@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libzip-dev \
     libpq-dev && \  # Add libpq-dev (PostgreSQL dependencies)
+    apt-get clean && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip pdo_pgsql  # Install pdo_pgsql extension
 
