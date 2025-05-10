@@ -15,6 +15,7 @@
 </head>
 <body class="font-sans antialiased bg-gray-50 dark:bg-gray-900">
     <div x-data class="min-h-screen flex">
+        <!-- Include the sidebar component -->
         @include('components.sidebar')
         
         <!-- Main Content -->
@@ -25,13 +26,13 @@
                 <div class="px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                     <!-- Hamburger button -->
                     <button 
-    @click="$store.sidebar.toggle()" 
-    class="text-gray-500 hover:text-gray-700 focus:outline-none"
->
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-    </svg>
-</button>
+                        @click="$store.sidebar.toggle()" 
+                        class="text-gray-500 hover:text-gray-700 focus:outline-none"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
                     
                     <!-- Page title -->
                     <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
@@ -86,6 +87,46 @@
     </div>
     
     <!-- Alpine.js Store for Sidebar State -->
-
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('sidebar', {
+                open: localStorage.getItem('sidebar-open') === 'true',
+                mobileOpen: false,
+                
+                toggle() {
+                    if (window.innerWidth < 1024) {
+                        this.mobileOpen = !this.mobileOpen;
+                    } else {
+                        this.open = !this.open;
+                        localStorage.setItem('sidebar-open', this.open);
+                    }
+                },
+                
+                close() {
+                    this.mobileOpen = false;
+                    this.open = false;
+                    localStorage.setItem('sidebar-open', 'false');
+                },
+                
+                init() {
+                    // Set initial state based on screen size
+                    if (window.innerWidth >= 1024) {
+                        this.open = localStorage.getItem('sidebar-open') !== 'false';
+                    } else {
+                        this.open = false;
+                    }
+                    
+                    // Update state when window is resized
+                    window.addEventListener('resize', () => {
+                        if (window.innerWidth >= 1024) {
+                            this.mobileOpen = false;
+                        } else {
+                            this.open = false;
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
