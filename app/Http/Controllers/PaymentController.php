@@ -45,7 +45,7 @@ class PaymentController extends Controller
     /**
      * Store a newly created payment in storage.
      */
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $validated = $request->validate([
             'invoice_id' => 'required|exists:invoices,id',
@@ -54,18 +54,18 @@ class PaymentController extends Controller
             'payment_method' => 'required|string',
             'notes' => 'nullable|string',
         ]);
-        
+
         $invoice = Invoice::findOrFail($validated['invoice_id']);
-        
-        $payment = new Payment();
-        $payment->invoice_id = $validated['invoice_id'];
-        $payment->client_id = $invoice->client_id;
-        $payment->amount = $validated['amount'];
-        $payment->payment_date = $validated['payment_date'];
-        $payment->payment_method = $validated['payment_method'];
-        $payment->notes = $validated['notes'] ?? null;
-        $payment->save();
-        
+
+        $payment = Payment::create([
+            'invoice_id' => $validated['invoice_id'],
+            'client_id' => $invoice->client_id,
+            'amount' => $validated['amount'],
+            'payment_date' => $validated['payment_date'],
+            'payment_method' => $validated['payment_method'],
+            'notes' => $validated['notes'] ?? null
+        ]);
+
         return redirect()->route('payments.index')
             ->with('success', 'Payment recorded successfully.');
     }

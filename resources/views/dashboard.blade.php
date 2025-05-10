@@ -177,27 +177,31 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                     @forelse ($recentActivities as $activity)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                {{ $activity->created_at->format('d/m/Y') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                @if ($activity->type === 'invoice_viewed')
-                                    Invoice <a href="{{ route('invoices.show', $activity->subject_id) }}" class="text-blue-600 hover:underline">#{{ $activity->subject_reference }}</a> was viewed.
-                                @elseif ($activity->type === 'quote_viewed')
-                                    Quote <a href="{{ route('quotes.show', $activity->subject_id) }}" class="text-blue-600 hover:underline">#{{ $activity->subject_reference }}</a> was viewed.
-                                @elseif ($activity->type === 'payment_received')
-                                    Payment of ${{ number_format($activity->amount, 2) }} was received for Invoice <a href="{{ route('invoices.show', $activity->subject_id) }}" class="text-blue-600 hover:underline">#{{ $activity->subject_reference }}</a>.
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="2" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
-                                No recent activity.
-                            </td>
-                        </tr>
-                    @endforelse
+    <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+            {{ $activity->created_at->format('d/m/Y') }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+            @switch($activity->type)
+                @case('invoice_viewed')
+                    Invoice <a href="{{ route('invoices.show', $activity->subject_id) }}" class="text-blue-600 hover:underline">#{{ $activity->subject_reference }}</a> was viewed.
+                    @break
+                @case('quote_viewed')
+                    Quote <a href="{{ route('quotes.show', $activity->subject_id) }}" class="text-blue-600 hover:underline">#{{ $activity->subject_reference }}</a> was viewed.
+                    @break
+                @case('payment_received')
+                    Payment of ${{ number_format($activity->amount, 2) }} was received for Invoice <a href="{{ route('invoices.show', $activity->subject_id) }}" class="text-blue-600 hover:underline">#{{ $activity->subject_reference }}</a>.
+                    @break
+            @endswitch
+        </td>
+    </tr>
+@empty
+    <tr>
+        <td colspan="2" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+            No recent activity.
+        </td>
+    </tr>
+@endforelse
                 </tbody>
             </table>
         </div>
