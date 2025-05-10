@@ -38,6 +38,14 @@ class Invoice extends Model
      * Calculate the invoice totals based on items
      * Prices are entered including GST, but subtotal should be ex GST
      */
+    public function payments()
+{
+    return $this->hasMany(Payment::class);
+}
+    public function getBalanceAttribute()
+{
+    return $this->total - $this->payments()->sum('amount');
+}
     public function calculateTotals()
     {
         // Get GST rate from settings (default to 10%)

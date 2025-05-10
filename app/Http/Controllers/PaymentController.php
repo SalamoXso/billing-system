@@ -35,12 +35,16 @@ class PaymentController extends Controller
      * Show the form for creating a new payment.
      */
     public function create()
-    {
-        $clients = Client::all();
-        $invoices = Invoice::whereRaw('total > (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE invoice_id = invoices.id)')->get();
-        
-        return view('payments.create', compact('clients', 'invoices'));
-    }
+{
+    $invoices = Invoice::with(['client', 'payments'])
+        ->whereHas('client') // Ensure invoice has a client
+        ->get()
+        ->filter(function($invoice) {
+            return $invoice->balance > 0;
+        });
+
+    return view('payments.create', compact('invoices'));
+}
 
     /**
      * Store a newly created payment in storage.

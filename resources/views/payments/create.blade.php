@@ -26,13 +26,14 @@
                         <select name="invoice_id" id="invoice_id" class="form-select" required>
                             <option value="">Select Invoice</option>
                             @foreach($invoices as $invoice)
-                                @if($invoice->balance > 0)
-                                    <option value="{{ $invoice->id }}" {{ old('invoice_id') == $invoice->id ? 'selected' : '' }}>
-                                        {{ $invoice->invoice_number }} - {{ $invoice->client->name }} (${{ number_format($invoice->balance, 2) }} due)
-                                    </option>
-                                @endif
+                                <option value="{{ $invoice->id }}" {{ old('invoice_id') == $invoice->id ? 'selected' : '' }}>
+                                    {{ $invoice->invoice_number }} - {{ $invoice->client->name }} (${{ number_format($invoice->balance, 2) }} due)
+                                </option>
                             @endforeach
                         </select>
+                        @error('invoice_id')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     
                     <!-- Client (Auto-filled) -->
@@ -48,6 +49,9 @@
                     <div class="form-group">
                         <label for="payment_date" class="form-label">Payment Date</label>
                         <input type="date" name="payment_date" id="payment_date" class="form-input" value="{{ old('payment_date', now()->format('Y-m-d')) }}" required>
+                        @error('payment_date')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     
                     <!-- Payment Method -->
@@ -61,6 +65,9 @@
                             <option value="cheque" {{ old('payment_method') == 'cheque' ? 'selected' : '' }}>Cheque</option>
                             <option value="other" {{ old('payment_method') == 'other' ? 'selected' : '' }}>Other</option>
                         </select>
+                        @error('payment_method')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     
                     <!-- Amount -->
@@ -72,6 +79,9 @@
                             </div>
                             <input type="number" name="amount" id="amount" class="form-input pl-7" min="0.01" step="0.01" value="{{ old('amount') }}" required>
                         </div>
+                        @error('amount')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
                 
@@ -89,37 +99,6 @@
                     <label for="notes" class="form-label">Notes</label>
                     <textarea name="notes" id="notes" rows="3" class="form-input">{{ old('notes') }}</textarea>
                 </div>
-                
-                <!-- Invoice Details (will be populated via JS) -->
-                <div id="invoice-details" class="mt-6 hidden">
-                    <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4">Invoice Details</h3>
-                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Invoice Number:</p>
-                            <p class="font-medium text-gray-900 dark:text-white" id="detail-invoice-number"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Invoice Date:</p>
-                            <p class="font-medium text-gray-900 dark:text-white" id="detail-invoice-date"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Due Date:</p>
-                            <p class="font-medium text-gray-900 dark:text-white" id="detail-due-date"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Total Amount:</p>
-                            <p class="font-medium text-gray-900 dark:text-white" id="detail-total"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Amount Paid:</p>
-                            <p class="font-medium text-gray-900 dark:text-white" id="detail-paid"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Balance Due:</p>
-                            <p class="font-medium text-red-600 dark:text-red-400" id="detail-balance"></p>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <div class="card-footer flex justify-between">
@@ -134,61 +113,39 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const invoiceSelect = document.getElementById('invoice_id');
-        const clientDisplay = document.getElementById('client_display');
-        const clientIdInput = document.getElementById('client_id');
-        const amountInput = document.getElementById('amount');
-        const invoiceDetails = document.getElementById('invoice-details');
-        
-        // Invoice data
-        const invoiceData = {
-            @foreach($invoices as $invoice)
-                {{ $invoice->id }}: {
-                    client_id: {{ $invoice->client_id }},
-                    client_name: "{{ $invoice->client->name }}",
-                    invoice_number: "{{ $invoice->invoice_number }}",
-                    invoice_date: "{{ $invoice->invoice_date->format('d/m/Y') }}",
-                    due_date: "{{ $invoice->due_date->format('d/m/Y') }}",
-                    total: {{ $invoice->total }},
-                    paid: {{ $invoice->payments->sum('amount') }},
-                    balance: {{ $invoice->balance }}
-                },
-            @endforeach
-        };
-        
-        // Update client and amount when invoice changes
-        invoiceSelect.addEventListener('change', function() {
-            const invoiceId = this.value;
-            if (invoiceId && invoiceData[invoiceId]) {
-                // Update client
-                clientDisplay.value = invoiceData[invoiceId].client_name;
-                clientIdInput.value = invoiceData[invoiceId].client_id;
+document.addEventListener('DOMContentLoaded', function() {
+    const invoiceSelect = document.getElementById('invoice_id');
+    const clientDisplay = document.getElementById('client_display');
+    const clientIdInput = document.getElementById('client_id');
+    const amountInput = document.getElementById('amount');
+    
+    // Fetch invoice data when needed
+    invoiceSelect.addEventListener('change', async function() {
+        const invoiceId = this.value;
+        if (invoiceId) {
+            try {
+                const response = await fetch(`/api/invoices/${invoiceId}/details`);
+                const data = await response.json();
                 
-                // Suggest remaining balance as amount
-                amountInput.value = invoiceData[invoiceId].balance.toFixed(2);
-                
-                // Show invoice details
-                document.getElementById('detail-invoice-number').textContent = invoiceData[invoiceId].invoice_number;
-                document.getElementById('detail-invoice-date').textContent = invoiceData[invoiceId].invoice_date;
-                document.getElementById('detail-due-date').textContent = invoiceData[invoiceId].due_date;
-                document.getElementById('detail-total').textContent = '$' + invoiceData[invoiceId].total.toFixed(2);
-                document.getElementById('detail-paid').textContent = '$' + invoiceData[invoiceId].paid.toFixed(2);
-                document.getElementById('detail-balance').textContent = '$' + invoiceData[invoiceId].balance.toFixed(2);
-                
-                invoiceDetails.classList.remove('hidden');
-            } else {
-                clientDisplay.value = '';
-                clientIdInput.value = '';
-                amountInput.value = '';
-                invoiceDetails.classList.add('hidden');
+                if (data.success) {
+                    clientDisplay.value = data.client_name;
+                    clientIdInput.value = data.client_id;
+                    amountInput.value = parseFloat(data.balance).toFixed(2);
+                }
+            } catch (error) {
+                console.error('Error fetching invoice details:', error);
             }
-        });
-        
-        // Initialize if there's a selected invoice
-        if (invoiceSelect.value) {
-            invoiceSelect.dispatchEvent(new Event('change'));
+        } else {
+            clientDisplay.value = '';
+            clientIdInput.value = '';
+            amountInput.value = '';
         }
     });
+    
+    // Initialize if there's a selected invoice
+    if (invoiceSelect.value) {
+        invoiceSelect.dispatchEvent(new Event('change'));
+    }
+});
 </script>
 @endpush
