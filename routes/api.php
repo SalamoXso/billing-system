@@ -17,3 +17,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('/invoices/{invoice}/details', function (App\Models\Invoice $invoice) {
+    return response()->json([
+        'success' => true,
+        'client_id' => $invoice->client_id,
+        'client_name' => $invoice->client->name,
+        'balance' => $invoice->balance
+    ]);
+});
