@@ -1,209 +1,108 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
-
 @section('content')
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <!-- Draft Invoices -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-        <div class="p-6 border-l-4 border-amber-500">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-amber-500 bg-opacity-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard</h1>
+        <a href="{{ route('invoices.create') }}" class="btn btn-primary">
+            Create Invoice
+        </a>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div class="dashboard-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <div class="dashboard-card-title">Total Invoices</div>
+                    <div class="dashboard-card-value">142</div>
+                    <div class="dashboard-card-subtitle">+12% from last month</div>
                 </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                            Draft Invoices
-                        </dt>
-                        <dd>
-                            <div class="text-lg font-medium text-gray-900 dark:text-gray-200">
-                                ${{ number_format($draftInvoicesTotal, 2) }}
-                            </div>
-                        </dd>
-                    </dl>
-                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 dark:text-gray-500">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
             </div>
-            <div class="mt-4">
-                <a href="{{ route('invoices.index', ['status' => 'draft']) }}" class="text-sm font-medium text-amber-600 hover:text-amber-500 dark:text-amber-400 dark:hover:text-amber-300">
-                    View all drafts &rarr;
-                </a>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <div class="dashboard-card-title">Active Clients</div>
+                    <div class="dashboard-card-value">24</div>
+                    <div class="dashboard-card-subtitle">+2 new this month</div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 dark:text-gray-500">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <div class="dashboard-card-title">Revenue</div>
+                    <div class="dashboard-card-value">$12,234</div>
+                    <div class="dashboard-card-subtitle">+18.2% from last month</div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 dark:text-gray-500">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <div class="dashboard-card-title">Products</div>
+                    <div class="dashboard-card-value">36</div>
+                    <div class="dashboard-card-subtitle">+3 added this month</div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 dark:text-gray-500">
+                    <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
             </div>
         </div>
     </div>
 
-    <!-- Sent Invoices -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-        <div class="p-6 border-l-4 border-blue-500">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-blue-500 bg-opacity-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    <div class="dashboard-card">
+        <h2 class="text-lg font-medium mb-2 text-gray-900 dark:text-white">Recent Invoices</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Your most recent invoices</p>
+        
+        <div class="space-y-2">
+            @for ($i = 1; $i <= 5; $i++)
+            <div class="flex items-center justify-between border border-gray-100 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-gray-800">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#26a6df" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                            Sent Invoices
-                        </dt>
-                        <dd>
-                            <div class="text-lg font-medium text-gray-900 dark:text-gray-200">
-                                ${{ number_format($sentInvoicesTotal, 2) }}
-                            </div>
-                        </dd>
-                    </dl>
-                </div>
-            </div>
-            <div class="mt-4">
-                <a href="{{ route('invoices.index', ['status' => 'sent']) }}" class="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-                    View all sent invoices &rarr;
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Overdue Invoices -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-        <div class="p-6 border-l-4 border-red-500">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-red-500 bg-opacity-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                            Overdue Invoices
-                        </dt>
-                        <dd>
-                            <div class="text-lg font-medium text-gray-900 dark:text-gray-200">
-                                ${{ number_format($overdueInvoicesTotal, 2) }}
-                            </div>
-                        </dd>
-                    </dl>
-                </div>
-            </div>
-            <div class="mt-4">
-                <a href="{{ route('invoices.index', ['status' => 'overdue']) }}" class="text-sm font-medium text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300">
-                    View overdue invoices &rarr;
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Payments Collected -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-        <div class="p-6 border-l-4 border-green-500">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-green-500 bg-opacity-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                            Payments Collected
-                        </dt>
-                        <dd>
-                            <div class="text-lg font-medium text-gray-900 dark:text-gray-200">
-                                ${{ number_format($paymentsCollected, 2) }}
-                            </div>
-                        </dd>
-                    </dl>
-                </div>
-            </div>
-            <div class="mt-4">
-                <a href="{{ route('payments.index') }}" class="text-sm font-medium text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300">
-                    View all payments &rarr;
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Quote Summary Section -->
-<div class="mb-8">
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Quote Summary</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Draft Quotes -->
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-            <div class="p-6 border-l-4 border-purple-500">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-purple-500 bg-opacity-10">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                    </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                Draft Quotes
-                            </dt>
-                            <dd>
-                                <div class="text-lg font-medium text-gray-900 dark:text-gray-200">
-                                    ${{ number_format($draftQuotesTotal, 2) }}
-                                </div>
-                            </dd>
-                        </dl>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">INV-{{ 2023 + $i }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Client {{ $i }}</p>
                     </div>
                 </div>
-                <div class="mt-4">
-                    <a href="{{ route('quotes.index', ['status' => 'draft']) }}" class="text-sm font-medium text-purple-600 hover:text-purple-500 dark:text-purple-400 dark:hover:text-purple-300">
-                        View draft quotes &rarr;
-                    </a>
+                <div class="flex items-center gap-3">
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">${{ number_format($i * 1000) }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Due in {{ $i * 5 }} days</p>
+                    </div>
+                    <div class="h-2 w-2 rounded-full {{ $i % 2 === 0 ? 'bg-green-500' : 'bg-amber-500' }}"></div>
                 </div>
             </div>
-        </div>
-
-        <!-- Other quote cards follow the same pattern -->
-    </div>
-</div>
-
-<!-- Recent Client Activity -->
-<div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-    <div class="p-6">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Recent Client Activity</h3>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Activity</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                    @forelse ($recentActivities as $activity)
-    <tr>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-            {{ $activity->created_at->format('d/m/Y') }}
-        </td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-            @switch($activity->type)
-                @case('invoice_viewed')
-                    Invoice <a href="{{ route('invoices.show', $activity->subject_id) }}" class="text-blue-600 hover:underline">#{{ $activity->subject_reference }}</a> was viewed.
-                    @break
-                @case('quote_viewed')
-                    Quote <a href="{{ route('quotes.show', $activity->subject_id) }}" class="text-blue-600 hover:underline">#{{ $activity->subject_reference }}</a> was viewed.
-                    @break
-                @case('payment_received')
-                    Payment of ${{ number_format($activity->amount, 2) }} was received for Invoice <a href="{{ route('invoices.show', $activity->subject_id) }}" class="text-blue-600 hover:underline">#{{ $activity->subject_reference }}</a>.
-                    @break
-            @endswitch
-        </td>
-    </tr>
-@empty
-    <tr>
-        <td colspan="2" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
-            No recent activity.
-        </td>
-    </tr>
-@endforelse
-                </tbody>
-            </table>
+            @endfor
         </div>
     </div>
 </div>

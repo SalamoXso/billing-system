@@ -1,132 +1,55 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>{{ config('app.name', 'Laravel') }}</title>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="font-sans antialiased bg-gray-50 dark:bg-gray-900">
-    <div x-data class="min-h-screen flex">
-        <!-- Include the sidebar component -->
-        @include('components.sidebar')
-        
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden transition-all duration-300"
-             :class="{'lg:ml-64': $store.sidebar.open}">
+    <div class="min-h-screen">
+        <!-- Sidebar -->
+        <x-sidebar />
+
+        <!-- Page Content -->
+        <div class="ml-60 md:ml-60 sm:ml-0">
             <!-- Top Navigation -->
-            <header class="bg-white dark:bg-gray-800 shadow z-10">
-                <div class="px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-                    <!-- Hamburger button -->
-                    <button 
-                        @click="$store.sidebar.toggle()" 
-                        class="text-gray-500 hover:text-gray-700 focus:outline-none"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 py-4 flex justify-between items-center">
+                <button id="sidebar-toggle" class="md:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu dark:text-gray-300">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-700 dark:text-gray-300">{{ Auth::user()->name }}</span>
+                    <button id="theme-toggle" class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <!-- Sun icon for dark mode -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700 dark:text-gray-300 dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <!-- Moon icon for light mode -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700 dark:text-gray-300 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                         </svg>
                     </button>
-                    
-                    <!-- Page title -->
-                    <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                        @yield('title', 'Dashboard')
-                    </h1>
-                    
-                    <!-- User dropdown -->
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none">
-                            <span class="mr-2">{{ Auth::user()->name }}</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                        
-                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
-                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                Profile
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
                 </div>
             </header>
-            
-            <!-- Flash Messages -->
-            @if (session('success') || session('error'))
-                <div class="px-4 sm:px-6 lg:px-8 py-4">
-                    @include('components.flash-message')
-                </div>
-            @endif
-            
-            <!-- Page Content -->
-            <main class="px-4 sm:px-6 lg:px-8 py-6">
+
+            <!-- Main Content -->
+            <main class="p-6">
                 @yield('content')
             </main>
-            
-            <!-- Footer -->
-            <footer class="bg-white dark:bg-gray-800 shadow mt-auto">
-                <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-                    <p class="text-center text-sm text-gray-500 dark:text-gray-400">
-                        &copy; {{ date('Y') }} Billing System. All rights reserved.
-                    </p>
-                </div>
-            </footer>
         </div>
     </div>
-    
-    <!-- Alpine.js Store for Sidebar State -->
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.store('sidebar', {
-                open: localStorage.getItem('sidebar-open') === 'true',
-                mobileOpen: false,
-                
-                toggle() {
-                    if (window.innerWidth < 1024) {
-                        this.mobileOpen = !this.mobileOpen;
-                    } else {
-                        this.open = !this.open;
-                        localStorage.setItem('sidebar-open', this.open);
-                    }
-                },
-                
-                close() {
-                    this.mobileOpen = false;
-                    this.open = false;
-                    localStorage.setItem('sidebar-open', 'false');
-                },
-                
-                init() {
-                    // Set initial state based on screen size
-                    if (window.innerWidth >= 1024) {
-                        this.open = localStorage.getItem('sidebar-open') !== 'false';
-                    } else {
-                        this.open = false;
-                    }
-                    
-                    // Update state when window is resized
-                    window.addEventListener('resize', () => {
-                        if (window.innerWidth >= 1024) {
-                            this.mobileOpen = false;
-                        } else {
-                            this.open = false;
-                        }
-                    });
-                }
-            });
-        });
-    </script>
 </body>
 </html>
